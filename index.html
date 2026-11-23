@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="description" content="Descubra, monitore e opere seus projetos Docker Compose em um painel desktop local. Baixe o Docker Sandbox Manager para Windows ou Linux.">
+    <title>Docker Sandbox Manager — projetos Compose em um só lugar</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #e8edf6;
+        background: #0f172a;
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        --page: #0f172a;
+        --surface: #191f30;
+        --surface-raised: #222b40;
+        --text: #e8edf6;
+        --muted: #a6b2c5;
+        --subtle: #8796ad;
+        --line: #30394b;
+        --line-strong: hsl(222 30% 24%);
+        --blue: #1d63ed;
+        --blue-hover: #3978f5;
+        --blue-soft: #b6d0ff;
+        --green: #63d7a3;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-width: 320px;
+        scroll-behavior: smooth;
+        scrollbar-color: #46536b var(--page);
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        background:
+          radial-gradient(ellipse at 68% 0%, rgba(29, 99, 237, 0.12), transparent 35rem),
+          var(--page);
+        color: var(--text);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      ::selection {
+        color: #fff;
+        background: var(--blue);
+      }
+
+      a {
+        color: inherit;
+        text-underline-offset: 0.22em;
+      }
+
+      a:focus-visible,
+      button:focus-visible,
+      select:focus-visible {
+        outline: 2px solid #9fc2ff;
+        outline-offset: 4px;
+      }
+
+      .skip-link {
+        position: absolute;
+        z-index: 5;
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        transform: translateY(-160%);
+        border-radius: 7px;
+        background: var(--surface-raised);
+        color: var(--text);
+      }
+
+      .skip-link:focus {
+        transform: translateY(0);
+      }
+
+      .site-header {
+        border-bottom: 1px solid var(--line);
+      }
+
+      .header-inner,
+      main,
+      .footer-inner {
+        width: min(1120px, calc(100% - 64px));
+        margin-inline: auto;
+      }
+
+      .header-inner {
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .wordmark {
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 650;
+        letter-spacing: -0.025em;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 26px;
+        font-size: 13px;
+      }
+
+      .nav-links a {
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 150ms ease;
+      }
+
+      .nav-links a:hover {
+        color: var(--text);
+      }
+
+      main {
+        padding-top: 72px;
+      }
+
+      .intro {
+        max-width: 790px;
+        animation: arrive 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 0;
+        font-size: clamp(42px, 5.3vw, 66px);
+        font-weight: 620;
+        line-height: 1.04;
+        letter-spacing: -0.045em;
+        text-wrap: balance;
+      }
+
+      .intro p {
+        max-width: 62ch;
+        margin: 22px 0 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.65;
+      }
+
+      .journey {
+        margin: 54px 0 0;
+        padding: 0;
+        list-style: none;
+        border-top: 1px solid var(--line-strong);
+      }
+
+      .step {
+        min-height: 112px;
+        display: grid;
+        grid-template-columns: 76px minmax(0, 1fr) minmax(280px, 340px);
+        align-items: center;
+        gap: 26px;
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .step-number {
+        color: var(--subtle);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.04em;
+      }
+
+      .step h2 {
+        margin: 0 0 4px;
+        font-size: 17px;
+        font-weight: 620;
+        letter-spacing: -0.015em;
+      }
+
+      .step p {
+        max-width: 55ch;
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .download-action {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 11px;
+        padding: 0 16px;
+        border: 0;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 650;
+        text-decoration: none;
+        transition: background-color 150ms ease, transform 150ms ease;
+      }
+
+      .download-action:hover {
+        background: var(--blue-hover);
+        transform: translateY(-1px);
+      }
+
+      .download-action[data-loading="true"] {
+        background: var(--surface-raised);
+        cursor: wait;
+      }
+
+      .download-action svg {
+        width: 16px;
+        height: 16px;
+        flex: none;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.7;
+      }
+
+      .release-note {
+        min-height: 22px;
+        margin-top: 9px !important;
+        color: var(--subtle) !important;
+        font-size: 12px !important;
+      }
+
+      .release-note a {
+        color: var(--blue-soft);
+      }
+
+      .platforms {
+        padding: 36px 0 38px;
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 16px;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 620;
+      }
+
+      .release-version {
+        color: var(--subtle);
+        font-size: 12px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .download-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .download-list li {
+        min-height: 42px;
+        display: grid;
+        grid-template-columns: minmax(150px, 0.75fr) minmax(0, 1.5fr) auto;
+        align-items: center;
+        gap: 20px;
+        border-top: 1px solid rgba(53, 64, 87, 0.62);
+      }
+
+      .download-list strong {
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .file-name {
+        overflow: hidden;
+        color: var(--subtle);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .file-link {
+        color: var(--blue-soft);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration-thickness: 1px;
+        white-space: nowrap;
+      }
+
+      .download-status {
+        margin: 12px 0 0;
+        color: var(--subtle);
+        font-size: 12px;
+      }
+
+      .download-status[data-state="error"] {
+        color: #f1c97a;
+      }
+
+      .features {
+        padding: 38px 0 50px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 34px;
+      }
+
+      .features h2 {
+        margin: 0 0 7px;
+        font-size: 13px;
+        font-weight: 620;
+      }
+
+      .features p {
+        max-width: 34ch;
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .site-footer {
+        border-top: 1px solid var(--line);
+      }
+
+      .footer-inner {
+        min-height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        color: var(--subtle);
+        font-size: 12px;
+      }
+
+      .footer-inner a {
+        color: var(--muted);
+      }
+
+      @keyframes arrive {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .header-inner,
+        main,
+        .footer-inner {
+          width: min(100% - 36px, 580px);
+        }
+
+        .header-inner {
+          min-height: 64px;
+        }
+
+        .nav-links {
+          gap: 0;
+        }
+
+        .nav-links a:not(:last-child) {
+          display: none;
+        }
+
+        main {
+          padding-top: 30px;
+        }
+
+        h1 {
+          font-size: clamp(36px, 9.2vw, 48px);
+        }
+
+        .intro p {
+          margin-top: 14px;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+
+        .journey {
+          margin-top: 27px;
+        }
+
+        .step {
+          min-height: auto;
+          grid-template-columns: 42px minmax(0, 1fr);
+          gap: 6px 12px;
+          padding: 12px 0;
+        }
+
+        .step-number {
+          grid-row: 1 / span 2;
+          align-self: start;
+          padding-top: 3px;
+        }
+
+        .step-copy,
+        .step-download {
+          grid-column: 2;
+        }
+
+        .step-download {
+          margin-top: 8px;
+        }
+
+        .step h2 {
+          font-size: 16px;
+        }
+
+        .step p {
+          font-size: 13px;
+          line-height: 1.45;
+        }
+
+        .download-action {
+          width: 100%;
+        }
+
+        .platforms {
+          padding: 29px 0;
+        }
+
+        .section-heading {
+          align-items: start;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .download-list li {
+          grid-template-columns: minmax(0, 1fr) auto;
+          gap: 4px 12px;
+          padding: 11px 0;
+        }
+
+        .download-list strong {
+          grid-column: 1;
+        }
+
+        .file-name {
+          grid-column: 1;
+          grid-row: 2;
+          max-width: 100%;
+        }
+
+        .file-link {
+          grid-column: 2;
+          grid-row: 1 / span 2;
+        }
+
+        .features {
+          grid-template-columns: 1fr;
+          gap: 22px;
+          padding: 30px 0 36px;
+        }
+
+        .features p {
+          max-width: 52ch;
+        }
+
+        .footer-inner {
+          min-height: 64px;
+          align-items: flex-start;
+          flex-direction: column;
+          justify-content: center;
+          gap: 5px;
+        }
+      }
+
+      @media (min-width: 761px) and (max-width: 980px) {
+        .header-inner,
+        main,
+        .footer-inner {
+          width: calc(100% - 48px);
+        }
+
+        .step {
+          grid-template-columns: 58px minmax(0, 1fr) minmax(260px, 310px);
+          gap: 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="wordmark" href="#topo">Docker Sandbox Manager</a>
+        <nav class="nav-links" aria-label="Navegação principal">
+          <a href="#como-funciona">Como funciona</a>
+          <a href="#requisitos">Requisitos</a>
+          <a href="https://github.com/soarestheu/docker-sandbox-manager" target="_blank" rel="noreferrer">Código-fonte</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="conteudo">
+      <section class="intro" id="topo" aria-labelledby="page-title">
+        <h1 id="page-title">Seus projetos Docker Compose, em um só lugar.</h1>
+        <p>Descubra projetos no seu workspace, acompanhe serviços e execute ações Compose em um app desktop local.</p>
+      </section>
+
+      <ol class="journey" id="como-funciona" aria-label="Primeiros passos">
+        <li class="step">
+          <span class="step-number">01</span>
+          <div class="step-copy">
+            <h2>Baixe e instale o aplicativo</h2>
+            <p>A release mais recente é consultada no GitHub. Escolha um instalador compatível com seu sistema.</p>
+          </div>
+          <div class="step-download">
+            <a class="download-action" id="primary-download" href="https://github.com/soarestheu/docker-sandbox-manager-releases/releases/latest" data-loading="true">
+              <span id="primary-label">Carregando instaladores…</span>
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+            </a>
+            <p class="release-note" id="release-note" aria-live="polite">Buscando a versão mais recente.</p>
+          </div>
+        </li>
+        <li class="step" id="requisitos">
+          <span class="step-number">02</span>
+          <div class="step-copy">
+            <h2>Deixe o Docker pronto</h2>
+            <p>O daemon precisa estar acessível e o plugin Docker Compose v2 disponível como <code>docker compose</code>.</p>
+          </div>
+        </li>
+        <li class="step">
+          <span class="step-number">03</span>
+          <div class="step-copy">
+            <h2>Escolha um workspace</h2>
+            <p>Varra um diretório para encontrar projetos Compose e começar a operar seus serviços.</p>
+          </div>
+        </li>
+      </ol>
+
+      <section class="platforms" aria-labelledby="downloads-title">
+        <div class="section-heading">
+          <h2 id="downloads-title">Todos os instaladores</h2>
+          <span class="release-version" id="release-version">Aguardando a release</span>
+        </div>
+        <ul class="download-list" id="download-list" aria-live="polite">
+          <li><span class="file-name">Os arquivos da release serão listados aqui.</span></li>
+        </ul>
+        <p class="download-status" id="download-status" role="status">Conectando ao GitHub…</p>
+      </section>
+
+      <section class="features" aria-label="O que você pode fazer">
+        <div>
+          <h2>Descubra projetos</h2>
+          <p>Pesquise, filtre, favorite e agrupe projetos encontrados no workspace escolhido.</p>
+        </div>
+        <div>
+          <h2>Opere serviços</h2>
+          <p>Inicie, pare, reinicie, atualize ou recrie serviços no contexto Docker selecionado.</p>
+        </div>
+        <div>
+          <h2>Acompanhe o estado</h2>
+          <p>Consulte logs, métricas e portas dos serviços que você escolher acompanhar.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>Docker Sandbox Manager · aplicativo desktop local</span>
+        <span>Requer Docker acessível e Docker Compose v2 · <a id="release-page-link" href="https://github.com/soarestheu/docker-sandbox-manager-releases/releases/latest" target="_blank" rel="noreferrer">Ver todas as releases</a></span>
+      </div>
+    </footer>
+
+    <noscript>
+      <p>Para baixar um instalador direto, habilite JavaScript. Você também pode <a href="https://github.com/soarestheu/docker-sandbox-manager-releases/releases/latest">abrir a última release no GitHub</a>.</p>
+    </noscript>
+
+    <script>
+      const releaseApi = "https://api.github.com/repos/soarestheu/docker-sandbox-manager-releases/releases/latest";
+      const releaseFallback = "https://github.com/soarestheu/docker-sandbox-manager-releases/releases/latest";
+      const downloadList = document.querySelector("#download-list");
+      const downloadStatus = document.querySelector("#download-status");
+      const releaseVersion = document.querySelector("#release-version");
+      const releaseNote = document.querySelector("#release-note");
+      const primaryDownload = document.querySelector("#primary-download");
+      const primaryLabel = document.querySelector("#primary-label");
+
+      const packageTypes = [
+        { label: "Windows · instalador EXE", pattern: /\.exe$/i, rank: 0 },
+        { label: "Windows · instalador MSI", pattern: /\.msi$/i, rank: 1 },
+        { label: "Linux · AppImage", pattern: /\.appimage$/i, rank: 2 },
+        { label: "Ubuntu / Debian · DEB", pattern: /\.deb$/i, rank: 3 },
+        { label: "Fedora / RPM", pattern: /\.rpm$/i, rank: 4 }
+      ];
+
+      function setDownloadError(message) {
+        primaryDownload.href = releaseFallback;
+        primaryDownload.removeAttribute("data-loading");
+        primaryLabel.textContent = "Abrir downloads no GitHub";
+        releaseNote.textContent = "O download direto não está disponível agora; use a página da release.";
+        downloadList.replaceChildren();
+
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.className = "file-link";
+        link.href = releaseFallback;
+        link.target = "_blank";
+        link.rel = "noreferrer";
+        link.textContent = "Ver arquivos publicados";
+        item.append(link);
+        downloadList.append(item);
+
+        downloadStatus.dataset.state = "error";
+        downloadStatus.textContent = message;
+        releaseVersion.textContent = "Release indisponível";
+      }
+
+      function formatSize(bytes) {
+        if (!Number.isFinite(bytes) || bytes < 0) {
+          return "";
+        }
+        return new Intl.NumberFormat("pt-BR", {
+          style: "unit",
+          unit: "megabyte",
+          maximumFractionDigits: 1
+        }).format(bytes / (1024 * 1024));
+      }
+
+      function assetUrl(tag, name) {
+        const safeTag = /^v\d+\.\d+\.\d+$/.test(tag);
+        const safeName = /^[A-Za-z0-9._+-]+$/.test(name);
+        if (!safeTag || !safeName) {
+          throw new Error("A release contém um nome de arquivo inesperado.");
+        }
+        return `https://github.com/soarestheu/docker-sandbox-manager-releases/releases/download/${encodeURIComponent(tag)}/${encodeURIComponent(name)}`;
+      }
+
+      function renderPackages(release) {
+        if (typeof release.tag_name !== "string" || !/^v\d+\.\d+\.\d+$/.test(release.tag_name)) {
+          throw new Error("A tag da release não está no formato esperado.");
+        }
+        if (!Array.isArray(release.assets)) {
+          throw new Error("A resposta do GitHub não contém a lista de arquivos.");
+        }
+
+        const packages = release.assets
+          .filter((asset) => asset && typeof asset.name === "string")
+          .filter((asset) => !asset.name.toLowerCase().endsWith(".sig"))
+          .map((asset) => {
+            const type = packageTypes.find((candidate) => candidate.pattern.test(asset.name));
+            if (!type) {
+              return null;
+            }
+            return {
+              label: type.label,
+              name: asset.name,
+              size: asset.size,
+              rank: type.rank,
+              url: assetUrl(release.tag_name, asset.name)
+            };
+          })
+          .filter(Boolean)
+          .sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name));
+
+        if (packages.length === 0) {
+          throw new Error("A última release ainda não tem instaladores compatíveis publicados.");
+        }
+
+        const windowsInstaller = packages.find((item) => item.name.toLowerCase().endsWith(".exe"))
+          || packages.find((item) => item.name.toLowerCase().endsWith(".msi"));
+        const primary = windowsInstaller || packages[0];
+        primaryDownload.href = primary.url;
+        primaryDownload.removeAttribute("data-loading");
+        primaryLabel.textContent = `Baixar ${primary.label}`;
+        releaseNote.textContent = `Versão ${release.tag_name} · ${primary.label}`;
+        releaseVersion.textContent = `${release.tag_name} · ${packages.length} instaladores`;
+
+        const releasePage = typeof release.html_url === "string"
+          && new URL(release.html_url).origin === "https://github.com"
+          ? release.html_url
+          : releaseFallback;
+        document.querySelector("#release-page-link").href = releasePage;
+
+        const rows = packages.map((item) => {
+          const row = document.createElement("li");
+          const label = document.createElement("strong");
+          const fileName = document.createElement("span");
+          const link = document.createElement("a");
+          const size = formatSize(item.size);
+
+          label.textContent = item.label;
+          fileName.className = "file-name";
+          fileName.textContent = item.name;
+          link.className = "file-link";
+          link.href = item.url;
+          link.textContent = size ? `Baixar · ${size}` : "Baixar";
+          row.append(label, fileName, link);
+          return row;
+        });
+        downloadList.replaceChildren(...rows);
+        downloadStatus.removeAttribute("data-state");
+        downloadStatus.textContent = `Downloads diretos publicados na release ${release.tag_name}.`;
+      }
+
+      async function loadLatestRelease() {
+        try {
+          const response = await fetch(releaseApi, {
+            headers: { Accept: "application/vnd.github+json" },
+            signal: AbortSignal.timeout(10000)
+          });
+          if (!response.ok) {
+            throw new Error(`O GitHub respondeu com HTTP ${response.status}.`);
+          }
+          renderPackages(await response.json());
+        } catch (error) {
+          console.error("Não foi possível carregar os instaladores da release.", error);
+          setDownloadError("Não foi possível carregar a release mais recente. Verifique sua conexão ou tente novamente no GitHub.");
+        }
+      }
+
+      loadLatestRelease();
+    </script>
+  </body>
+</html>

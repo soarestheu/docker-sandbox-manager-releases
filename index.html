@@ -167,10 +167,15 @@
       .step {
         min-height: 112px;
         display: grid;
-        grid-template-columns: 76px minmax(0, 1fr) minmax(280px, 340px);
+        grid-template-columns: 76px minmax(0, 1fr) minmax(320px, 360px);
         align-items: center;
         gap: 26px;
         border-bottom: 1px solid var(--line-strong);
+      }
+
+      .step--download {
+        min-height: auto;
+        padding: 18px 0;
       }
 
       .step-number {
@@ -212,13 +217,85 @@
         transition: background-color 150ms ease, transform 150ms ease;
       }
 
+      .download-action[aria-disabled="true"] {
+        background: var(--surface-raised);
+        color: var(--subtle);
+        cursor: not-allowed;
+      }
+
       .download-action:hover {
         background: var(--blue-hover);
         transform: translateY(-1px);
       }
 
+      .download-action[aria-disabled="true"]:hover {
+        background: var(--surface-raised);
+        transform: none;
+      }
+
       .download-action[data-loading="true"] {
         background: var(--surface-raised);
+        cursor: wait;
+      }
+
+      .installer-picker {
+        padding: 14px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--surface);
+      }
+
+      .picker-meta {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 11px;
+      }
+
+      .picker-meta span {
+        color: var(--subtle);
+        font-size: 12px;
+        letter-spacing: 0.045em;
+        text-transform: uppercase;
+      }
+
+      .release-version {
+        color: var(--text);
+        font-size: 13px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 620;
+      }
+
+      .package-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 550;
+      }
+
+      .download-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .package-select {
+        width: 100%;
+        min-width: 0;
+        height: 44px;
+        padding: 0 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: #171e31;
+        color: var(--text);
+        font: inherit;
+        font-size: 12px;
+      }
+
+      .package-select:disabled {
+        color: var(--subtle);
         cursor: wait;
       }
 
@@ -234,14 +311,14 @@
       }
 
       .release-note {
-        min-height: 22px;
-        margin-top: 9px !important;
-        color: var(--subtle) !important;
-        font-size: 12px !important;
+        min-height: 18px;
+        margin: 8px 0 0;
+        color: var(--subtle);
+        font-size: 12px;
       }
 
-      .release-note a {
-        color: var(--blue-soft);
+      .release-note[data-state="error"] {
+        color: #f1c97a;
       }
 
       .platforms {
@@ -263,12 +340,6 @@
         font-weight: 620;
       }
 
-      .release-version {
-        color: var(--subtle);
-        font-size: 12px;
-        font-variant-numeric: tabular-nums;
-      }
-
       .download-list {
         margin: 0;
         padding: 0;
@@ -281,7 +352,7 @@
         grid-template-columns: minmax(150px, 0.75fr) minmax(0, 1.5fr) auto;
         align-items: center;
         gap: 20px;
-        border-top: 1px solid rgba(53, 64, 87, 0.62);
+        border-top: 1px solid hsl(222 30% 24% / 0.62);
       }
 
       .download-list strong {
@@ -380,7 +451,7 @@
           gap: 0;
         }
 
-        .nav-links a:not(:last-child) {
+        .nav-links a:not(.nav-download) {
           display: none;
         }
 
@@ -424,6 +495,10 @@
           margin-top: 8px;
         }
 
+        .step--download {
+          padding: 12px 0;
+        }
+
         .step h2 {
           font-size: 16px;
         }
@@ -435,6 +510,30 @@
 
         .download-action {
           width: 100%;
+        }
+
+        .installer-picker {
+          padding: 12px;
+        }
+
+        .picker-meta {
+          align-items: flex-start;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .download-controls {
+          grid-template-columns: minmax(0, 1fr) auto;
+        }
+
+        .package-select {
+          font-size: 12px;
+        }
+
+        .download-controls .download-action {
+          width: auto;
+          padding-inline: 12px;
+          white-space: nowrap;
         }
 
         .platforms {
@@ -495,7 +594,7 @@
         }
 
         .step {
-          grid-template-columns: 58px minmax(0, 1fr) minmax(260px, 310px);
+          grid-template-columns: 58px minmax(0, 1fr) minmax(280px, 320px);
           gap: 18px;
         }
       }
@@ -518,9 +617,9 @@
       <div class="header-inner">
         <a class="wordmark" href="#topo">Docker Sandbox Manager</a>
         <nav class="nav-links" aria-label="Navegação principal">
+          <a class="nav-download" href="#downloads">Downloads</a>
           <a href="#como-funciona">Como funciona</a>
           <a href="#requisitos">Requisitos</a>
-          <a href="https://github.com/soarestheu/docker-sandbox-manager" target="_blank" rel="noreferrer">Código-fonte</a>
         </nav>
       </div>
     </header>
@@ -528,22 +627,34 @@
     <main id="conteudo">
       <section class="intro" id="topo" aria-labelledby="page-title">
         <h1 id="page-title">Seus projetos Docker Compose, em um só lugar.</h1>
-        <p>Descubra projetos no seu workspace, acompanhe serviços e execute ações Compose em um app desktop local.</p>
+        <p>Descubra projetos, acompanhe serviços e execute ações Compose em um aplicativo desktop local.</p>
       </section>
 
       <ol class="journey" id="como-funciona" aria-label="Primeiros passos">
-        <li class="step">
+        <li class="step step--download">
           <span class="step-number">01</span>
           <div class="step-copy">
-            <h2>Baixe e instale o aplicativo</h2>
-            <p>A release mais recente é consultada no GitHub. Escolha um instalador compatível com seu sistema.</p>
+            <h2>Escolha seu instalador</h2>
+            <p>Selecione o sistema e o formato para baixar o arquivo da versão mais recente.</p>
           </div>
           <div class="step-download">
-            <a class="download-action" id="primary-download" href="https://github.com/soarestheu/docker-sandbox-manager-releases/releases/latest" data-loading="true">
-              <span id="primary-label">Carregando instaladores…</span>
-              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
-            </a>
-            <p class="release-note" id="release-note" aria-live="polite">Buscando a versão mais recente.</p>
+            <div class="installer-picker">
+              <div class="picker-meta">
+                <span>Release mais recente</span>
+                <strong class="release-version" id="release-version">Consultando…</strong>
+              </div>
+              <label class="package-label" for="package-select">Sistema e formato</label>
+              <div class="download-controls">
+                <select class="package-select" id="package-select" aria-describedby="release-note" disabled>
+                  <option value="">Carregando instaladores…</option>
+                </select>
+                <a class="download-action" id="primary-download" href="#downloads" aria-disabled="true" data-loading="true">
+                  <span id="primary-label">Aguarde</span>
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"/></svg>
+                </a>
+              </div>
+              <p class="release-note" id="release-note" aria-live="polite">Buscando arquivos publicados.</p>
+            </div>
           </div>
         </li>
         <li class="step" id="requisitos">
@@ -562,10 +673,9 @@
         </li>
       </ol>
 
-      <section class="platforms" aria-labelledby="downloads-title">
+      <section class="platforms" id="downloads" aria-labelledby="downloads-title">
         <div class="section-heading">
-          <h2 id="downloads-title">Todos os instaladores</h2>
-          <span class="release-version" id="release-version">Aguardando a release</span>
+          <h2 id="downloads-title">Downloads diretos por arquivo</h2>
         </div>
         <ul class="download-list" id="download-list" aria-live="polite">
           <li><span class="file-name">Os arquivos da release serão listados aqui.</span></li>
@@ -607,8 +717,11 @@
       const downloadStatus = document.querySelector("#download-status");
       const releaseVersion = document.querySelector("#release-version");
       const releaseNote = document.querySelector("#release-note");
+      const packageSelect = document.querySelector("#package-select");
       const primaryDownload = document.querySelector("#primary-download");
       const primaryLabel = document.querySelector("#primary-label");
+      const packagesByName = new Map();
+      let latestReleaseTag = "";
 
       const packageTypes = [
         { label: "Windows · instalador EXE", pattern: /\.exe$/i, rank: 0 },
@@ -619,10 +732,19 @@
       ];
 
       function setDownloadError(message) {
+        packageSelect.replaceChildren();
+        const unavailableOption = document.createElement("option");
+        unavailableOption.value = "";
+        unavailableOption.textContent = "Instaladores indisponíveis";
+        packageSelect.append(unavailableOption);
+        packageSelect.disabled = true;
+
         primaryDownload.href = releaseFallback;
+        primaryDownload.removeAttribute("aria-disabled");
         primaryDownload.removeAttribute("data-loading");
-        primaryLabel.textContent = "Abrir downloads no GitHub";
-        releaseNote.textContent = "O download direto não está disponível agora; use a página da release.";
+        primaryLabel.textContent = "Ver releases";
+        releaseNote.dataset.state = "error";
+        releaseNote.textContent = "Não foi possível carregar os instaladores. Abra a página de releases.";
         downloadList.replaceChildren();
 
         const item = document.createElement("li");
@@ -638,6 +760,22 @@
         downloadStatus.dataset.state = "error";
         downloadStatus.textContent = message;
         releaseVersion.textContent = "Release indisponível";
+      }
+
+      function updatePrimaryDownload() {
+        const selected = packagesByName.get(packageSelect.value);
+        if (!selected) {
+          primaryDownload.href = "#downloads";
+          primaryDownload.setAttribute("aria-disabled", "true");
+          primaryLabel.textContent = "Baixar";
+          releaseNote.textContent = `Selecione um formato · ${latestReleaseTag}`;
+          return;
+        }
+
+        primaryDownload.href = selected.url;
+        primaryDownload.removeAttribute("aria-disabled");
+        primaryLabel.textContent = "Baixar";
+        releaseNote.textContent = `${latestReleaseTag} · ${selected.label}`;
       }
 
       function formatSize(bytes) {
@@ -691,14 +829,30 @@
           throw new Error("A última release ainda não tem instaladores compatíveis publicados.");
         }
 
-        const windowsInstaller = packages.find((item) => item.name.toLowerCase().endsWith(".exe"))
-          || packages.find((item) => item.name.toLowerCase().endsWith(".msi"));
-        const primary = windowsInstaller || packages[0];
-        primaryDownload.href = primary.url;
+        latestReleaseTag = release.tag_name;
+        packagesByName.clear();
+        packageSelect.replaceChildren();
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "Selecione o sistema";
+        packageSelect.append(placeholder);
+
+        for (const item of packages) {
+          const option = document.createElement("option");
+          option.value = item.name;
+          option.textContent = item.label;
+          packageSelect.append(option);
+          packagesByName.set(item.name, item);
+        }
+
+        packageSelect.disabled = false;
+        primaryDownload.href = "#downloads";
+        primaryDownload.setAttribute("aria-disabled", "true");
         primaryDownload.removeAttribute("data-loading");
-        primaryLabel.textContent = `Baixar ${primary.label}`;
-        releaseNote.textContent = `Versão ${release.tag_name} · ${primary.label}`;
-        releaseVersion.textContent = `${release.tag_name} · ${packages.length} instaladores`;
+        primaryLabel.textContent = "Baixar";
+        releaseNote.removeAttribute("data-state");
+        releaseNote.textContent = `Selecione um formato · ${release.tag_name}`;
+        releaseVersion.textContent = `${release.tag_name} · ${packages.length} formatos`;
 
         const releasePage = typeof release.html_url === "string"
           && new URL(release.html_url).origin === "https://github.com"
@@ -724,8 +878,15 @@
         });
         downloadList.replaceChildren(...rows);
         downloadStatus.removeAttribute("data-state");
-        downloadStatus.textContent = `Downloads diretos publicados na release ${release.tag_name}.`;
+        downloadStatus.textContent = `Ou escolha um arquivo direto da release ${release.tag_name}.`;
       }
+
+      packageSelect.addEventListener("change", updatePrimaryDownload);
+      primaryDownload.addEventListener("click", (event) => {
+        if (primaryDownload.getAttribute("aria-disabled") === "true") {
+          event.preventDefault();
+        }
+      });
 
       async function loadLatestRelease() {
         try {

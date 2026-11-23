@@ -321,6 +321,89 @@
         color: #f1c97a;
       }
 
+      .integrity-check {
+        margin-top: 10px;
+      }
+
+      .integrity-toggle,
+      .copy-hash {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .integrity-toggle:hover,
+      .copy-hash:hover:not(:disabled) {
+        color: var(--text);
+      }
+
+      .integrity-toggle:disabled,
+      .copy-hash:disabled {
+        color: var(--subtle);
+        cursor: not-allowed;
+      }
+
+      .integrity-toggle svg,
+      .auto-update svg {
+        width: 15px;
+        height: 15px;
+        flex: none;
+        fill: none;
+        stroke: currentColor;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 1.7;
+      }
+
+      .integrity-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 8px 12px;
+        margin-top: 9px;
+        padding: 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 8px;
+        background: #171e31;
+      }
+
+      .integrity-panel[hidden] {
+        display: none;
+      }
+
+      .integrity-panel p {
+        grid-column: 1 / -1;
+        margin: 0;
+        color: var(--subtle);
+        font-size: 11px;
+      }
+
+      .sha256-value {
+        min-width: 0;
+        overflow-wrap: anywhere;
+        color: var(--text);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 11px;
+      }
+
+      .copy-hash {
+        align-self: start;
+        color: var(--blue-soft);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      .integrity-panel .integrity-status {
+        grid-column: 1 / -1;
+      }
+
       .platforms {
         padding: 36px 0 38px;
         border-bottom: 1px solid var(--line-strong);
@@ -385,6 +468,57 @@
 
       .download-status[data-state="error"] {
         color: #f1c97a;
+      }
+
+      .install-help {
+        padding: 30px 0 34px;
+        border-bottom: 1px solid var(--line-strong);
+      }
+
+      .install-guidance {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+      }
+
+      .install-guidance h3 {
+        margin: 0 0 5px;
+        font-size: 13px;
+        font-weight: 620;
+      }
+
+      .install-guidance p {
+        max-width: 54ch;
+        margin: 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .install-command {
+        display: inline-block;
+        max-width: 100%;
+        margin-top: 8px;
+        padding: 6px 9px;
+        overflow-wrap: anywhere;
+        border: 1px solid var(--line-strong);
+        border-radius: 7px;
+        background: #171e31;
+        color: var(--text);
+        font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+        font-size: 12px;
+      }
+
+      .auto-update {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .auto-update svg {
+        color: var(--blue-soft);
       }
 
       .features {
@@ -540,6 +674,20 @@
           padding: 29px 0;
         }
 
+        .install-help {
+          padding: 25px 0 28px;
+        }
+
+        .install-guidance {
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+
+        .auto-update {
+          align-items: flex-start;
+          margin-top: 16px;
+        }
+
         .section-heading {
           align-items: start;
           flex-direction: column;
@@ -654,6 +802,18 @@
                 </a>
               </div>
               <p class="release-note" id="release-note" aria-live="polite">Buscando arquivos publicados.</p>
+              <div class="integrity-check">
+                <button class="integrity-toggle" id="integrity-toggle" type="button" aria-expanded="false" aria-controls="integrity-panel" disabled>
+                  <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 19 6v5c0 4.7-2.9 8-7 10-4.1-2-7-5.3-7-10V6l7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+                  <span>Verificar integridade (SHA-256)</span>
+                </button>
+                <div class="integrity-panel" id="integrity-panel" hidden>
+                  <p id="integrity-description">Hash SHA-256 publicado para o arquivo selecionado:</p>
+                  <code class="sha256-value" id="sha256-value">Selecione um instalador.</code>
+                  <button class="copy-hash" id="copy-hash" type="button" disabled>Copiar hash</button>
+                  <p class="integrity-status" id="integrity-status" role="status" aria-live="polite"></p>
+                </div>
+              </div>
             </div>
           </div>
         </li>
@@ -681,6 +841,27 @@
           <li><span class="file-name">Os arquivos da release serão listados aqui.</span></li>
         </ul>
         <p class="download-status" id="download-status" role="status">Conectando ao GitHub…</p>
+      </section>
+
+      <section class="install-help" aria-labelledby="install-help-title">
+        <div class="section-heading">
+          <h2 id="install-help-title">Depois do download</h2>
+        </div>
+        <div class="install-guidance">
+          <div>
+            <h3>Windows</h3>
+            <p>Se o SmartScreen exibir um aviso, clique em “Mais informações” e depois em “Executar assim mesmo”. O instalador ainda não possui certificado digital pago.</p>
+          </div>
+          <div>
+            <h3>Ubuntu / Debian</h3>
+            <p>Instale o arquivo DEB pelo terminal, substituindo o exemplo pelo nome do arquivo baixado.</p>
+            <code class="install-command">sudo apt install ./nome-do-arquivo.deb</code>
+          </div>
+        </div>
+        <p class="auto-update">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 7v5h-5"/><path d="M4.9 9a7.5 7.5 0 0 1 12.4-2L20 12"/><path d="M4 17v-5h5"/><path d="M19.1 15a7.5 7.5 0 0 1-12.4 2L4 12"/></svg>
+          <span>O app verifica novas versões automaticamente e permite instalá-las pelo próprio app.</span>
+        </p>
       </section>
 
       <section class="features" aria-label="O que você pode fazer">
@@ -720,8 +901,19 @@
       const packageSelect = document.querySelector("#package-select");
       const primaryDownload = document.querySelector("#primary-download");
       const primaryLabel = document.querySelector("#primary-label");
+      const integrityToggle = document.querySelector("#integrity-toggle");
+      const integrityPanel = document.querySelector("#integrity-panel");
+      const sha256Value = document.querySelector("#sha256-value");
+      const copyHashButton = document.querySelector("#copy-hash");
+      const integrityStatus = document.querySelector("#integrity-status");
       const packagesByName = new Map();
+      const detectedPlatform = /Windows/i.test(navigator.userAgent)
+        ? "windows"
+        : /Linux/i.test(navigator.userAgent) && !/Android/i.test(navigator.userAgent)
+          ? "linux"
+          : "";
       let latestReleaseTag = "";
+      let recommendedPackageName = "";
 
       const packageTypes = [
         { label: "Windows · instalador EXE", pattern: /\.exe$/i, rank: 0 },
@@ -764,6 +956,24 @@
 
       function updatePrimaryDownload() {
         const selected = packagesByName.get(packageSelect.value);
+        const hashAvailable = Boolean(selected?.sha256);
+        integrityToggle.disabled = !selected;
+        copyHashButton.disabled = !hashAvailable || !navigator.clipboard?.writeText;
+        integrityStatus.textContent = "";
+        if (hashAvailable) {
+          sha256Value.textContent = selected.sha256;
+        } else if (selected) {
+          sha256Value.textContent = "Hash SHA-256 não publicado para este arquivo.";
+        } else {
+          sha256Value.textContent = "Selecione um instalador.";
+          integrityPanel.hidden = true;
+          integrityToggle.setAttribute("aria-expanded", "false");
+        }
+
+        if (selected && !navigator.clipboard?.writeText) {
+          integrityStatus.textContent = "Cópia indisponível neste navegador; selecione o hash para copiá-lo manualmente.";
+        }
+
         if (!selected) {
           primaryDownload.href = "#downloads";
           primaryDownload.setAttribute("aria-disabled", "true");
@@ -775,7 +985,9 @@
         primaryDownload.href = selected.url;
         primaryDownload.removeAttribute("aria-disabled");
         primaryLabel.textContent = "Baixar";
-        releaseNote.textContent = `${latestReleaseTag} · ${selected.label}`;
+        releaseNote.textContent = selected.name === recommendedPackageName
+          ? `✨ Recomendado para o seu sistema · ${latestReleaseTag}`
+          : `${latestReleaseTag} · ${selected.label}`;
       }
 
       function formatSize(bytes) {
@@ -818,6 +1030,9 @@
               label: type.label,
               name: asset.name,
               size: asset.size,
+              sha256: typeof asset.digest === "string"
+                ? (/^sha256:([a-f0-9]{64})$/i.exec(asset.digest)?.[1] ?? "").toLowerCase()
+                : "",
               rank: type.rank,
               url: assetUrl(release.tag_name, asset.name)
             };
@@ -851,7 +1066,6 @@
         primaryDownload.removeAttribute("data-loading");
         primaryLabel.textContent = "Baixar";
         releaseNote.removeAttribute("data-state");
-        releaseNote.textContent = `Selecione um formato · ${release.tag_name}`;
         releaseVersion.textContent = `${release.tag_name} · ${packages.length} formatos`;
 
         const releasePage = typeof release.html_url === "string"
@@ -879,9 +1093,44 @@
         downloadList.replaceChildren(...rows);
         downloadStatus.removeAttribute("data-state");
         downloadStatus.textContent = `Ou escolha um arquivo direto da release ${release.tag_name}.`;
+
+        const preferredExtensions = detectedPlatform === "windows"
+          ? [".msi", ".exe"]
+          : detectedPlatform === "linux"
+            ? [".deb", ".appimage"]
+            : [];
+        const recommendedPackage = preferredExtensions
+          .map((extension) => packages.find((item) => item.name.toLowerCase().endsWith(extension)))
+          .find(Boolean);
+
+        recommendedPackageName = recommendedPackage?.name ?? "";
+        packageSelect.value = recommendedPackageName;
+        updatePrimaryDownload();
+        if (!recommendedPackage) {
+          releaseNote.textContent = `Selecione um formato · ${release.tag_name}`;
+        }
       }
 
       packageSelect.addEventListener("change", updatePrimaryDownload);
+      integrityToggle.addEventListener("click", () => {
+        const expanded = integrityToggle.getAttribute("aria-expanded") === "true";
+        integrityToggle.setAttribute("aria-expanded", String(!expanded));
+        integrityPanel.hidden = expanded;
+      });
+      copyHashButton.addEventListener("click", async () => {
+        const selected = packagesByName.get(packageSelect.value);
+        if (!selected?.sha256 || !navigator.clipboard?.writeText) {
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(selected.sha256);
+          integrityStatus.textContent = "Hash copiado.";
+        } catch (error) {
+          console.error("Não foi possível copiar o hash SHA-256.", error);
+          integrityStatus.textContent = "Não foi possível copiar. Selecione o hash e copie manualmente.";
+        }
+      });
       primaryDownload.addEventListener("click", (event) => {
         if (primaryDownload.getAttribute("aria-disabled") === "true") {
           event.preventDefault();
